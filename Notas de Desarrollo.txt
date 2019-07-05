@@ -1,4 +1,4 @@
-Cambios en el archivo Notas
+Cambios al archivo Notas de Desarrollo.txt 
 https://datatables.net
 	Zero configuration
 	How to show less than 10 rows
