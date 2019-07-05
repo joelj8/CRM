@@ -43,4 +43,4 @@ https://stackoverflow.com/questions/9988634/ajax-call-into-mvc-controller-url-is
 
 https://www.c-sharpcorner.com/blogs/using-ajax-in-asp-net-mvc
 https://stackoverflow.com/questions/44386970/mvc-5-datatable-error
-	MVC 5 Datatable Error [Ejemplo configuracion Ajax]
+	MVC 5 Datatable Error [Ej: configuracion Ajax]
