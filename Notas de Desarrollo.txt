@@ -1,0 +1,45 @@
+https://datatables.net
+	Zero configuration
+	How to show less than 10 rows
+
+https://learn.jquery.com/
+
+https://bootsnipp.com/buttons
+	Botones Bootstrap
+
+https://htmlcolorcodes.com/es/
+	Colores
+
+Investigar sobre esto: image base64 para configurar los archivos Excel del Datatable
+
+https://stackoverflow.com/questions/11679385/reset-entity-framework-migrations
+	Reset Entity-Framework Migrations
+
+https://www.tutorialsteacher.com
+	Tutoriales y ejeplos C# / MVC / WEB API
+
+https://www.c-sharpcorner.com/article/code-first-approach-in-mvc-5/
+https://www.c-sharpcorner.com/article/code-first-approach-with-asp-net-mvc-framework/
+	MVC - Ejemplo Code First
+
+https://www.c-sharpcorner.com/article/dropdownlist-in-asp-net-mvc/
+	Ejemplo DropDown
+
+https://stackoverflow.com/questions/1100061/how-to-configure-invariant-culture-in-asp-net-globalization
+	setting globalization in web.config
+
+https://stackoverflow.com/questions/28349683/asp-mvc-datetime-validation-error
+	ASP MVC DateTime validation error
+
+https://stackoverrun.com/es/q/1851016
+	Eliminar todas las filas en una tabla HTML
+
+https://stackoverflow.com/questions/20574268/updating-data-in-table-from-ajax-call
+	Updating Data in Table from AJAX Call
+
+https://stackoverflow.com/questions/9988634/ajax-call-into-mvc-controller-url-issue
+	Ajax call Into MVC Controller- Url Issue
+
+https://www.c-sharpcorner.com/blogs/using-ajax-in-asp-net-mvc
+https://stackoverflow.com/questions/44386970/mvc-5-datatable-error
+	MVC 5 Datatable Error [Ejemplo configuracion Ajax]
