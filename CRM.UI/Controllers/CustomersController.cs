@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.OleDb;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -13,9 +14,11 @@ namespace CRM.UI.Controllers
 {
     public class CustomersController : Controller
     {
-        private CDBContext db = new CDBContext();
+        private readonly CDBContext db ;
 
-
+        public CustomersController() {
+            db = new CDBContext();
+        }
         // GET: Customers
         public ActionResult Index()
         {
@@ -135,6 +138,10 @@ namespace CRM.UI.Controllers
 
         public ActionResult CargaData(string nombre, string genero)
         {
+            // LoadXLS("c:\\DesaVisual\\CRM\\CRM.UI\\App_Data\\agenda.xlsx", "Hoja", "Gender", "M");
+
+            //LoadExcel();
+
             var cusList = db.customers.ToList<Customer>();
            if (genero != string.Empty)
             {
@@ -151,6 +158,71 @@ namespace CRM.UI.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+
+        private void LoadExcel()
+        {
+            string archivo_xls = "C:\\DesaVisual\\CRM\\CRM.UI\\App_Data\\agenda.xlsx";
+            string Connection = string.Format("Provider=Microsoft.ACE.OLEDB.12.0;DataSource={0};Extended Properties=\"Excel 12.0;HDR=Yes;IMEX=1\";" , archivo_xls);
+
+            //code to read the content of format file 
+            OleDbConnection con = new OleDbConnection(Connection);
+            OleDbCommand command = new OleDbCommand();
+
+            DataTable dt = new DataTable();
+            OleDbDataAdapter myCommand = new OleDbDataAdapter("select * from [Tabelle1$]", con);
+
+            myCommand.Fill(dt);
+            Console.Write(dt.Rows.Count);
+        }
+        private DataTable LoadXLS(string strFile, String sheetName, String column, String value)
+        {
+            DataTable dtXLS = new DataTable(sheetName);
+
+            try
+            {
+                string strConnectionString = "";
+
+                if (strFile.Trim().EndsWith(".xlsx"))
+                {
+
+                    strConnectionString = string.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source='{0}';Extended Properties=\"Excel 12.0 Xml;HDR=YES;IMEX=1\";", strFile);
+
+                }
+                else if (strFile.Trim().EndsWith(".xls"))
+                {
+
+                    strConnectionString = string.Format("Provider=Microsoft.Jet.OLEDB.4.0;Data Source='{0}';Extended Properties=\"Excel 8.0;HDR=Yes;IMEX=1\";", strFile);
+
+                }
+
+                OleDbConnection SQLConn = new OleDbConnection(strConnectionString);
+
+                SQLConn.Open();
+
+                OleDbDataAdapter SQLAdapter = new OleDbDataAdapter();
+
+                 string sql = "SELECT * FROM [" + sheetName + "$] WHERE " + column + " = '" + value +"' ";
+               // string sql = "SELECT * FROM [" + sheetName + "$]  " ;
+
+                OleDbCommand selectCMD = new OleDbCommand(sql, SQLConn);
+
+                SQLAdapter.SelectCommand = selectCMD;
+
+                SQLAdapter.Fill(dtXLS);
+                
+
+                SQLConn.Close();
+            }
+
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            return dtXLS;
+
         }
     }
 }

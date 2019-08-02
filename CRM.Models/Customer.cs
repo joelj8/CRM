@@ -35,6 +35,7 @@ namespace CRM.Models
         //[DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         [DataType(DataType.DateTime)]
+        [DisplayName("Nacimiento")]
         public DateTime? fechaNacimiento { get; set; }
         public string GenderId { get; set; }
 
