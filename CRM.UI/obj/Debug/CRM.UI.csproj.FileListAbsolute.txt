@@ -108,3 +108,5 @@ C:\DesaVisual\CRM\CRM.UI\bin\CRM.Models.dll
 C:\DesaVisual\CRM\CRM.UI\bin\CRM.Data.pdb
 C:\DesaVisual\CRM\CRM.UI\bin\CRM.Data.dll.config
 C:\DesaVisual\CRM\CRM.UI\bin\CRM.Models.pdb
+C:\DesaVisual\CRM\CRM.UI\bin\RestSharp.dll
+C:\DesaVisual\CRM\CRM.UI\bin\RestSharp.xml

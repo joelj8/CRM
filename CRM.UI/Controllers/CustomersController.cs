@@ -9,6 +9,9 @@ using System.Web;
 using System.Web.Mvc;
 using CRM.Data;
 using CRM.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using RestSharp;
 
 namespace CRM.UI.Controllers
 {
@@ -31,6 +34,61 @@ namespace CRM.UI.Controllers
         // GET: Customers/Details/5
         public ActionResult Details(int? id)
         {
+            /*
+            /* using RestSharp; // https://www.nuget.org/packages/RestSharp/ * /
+
+            var client = new RestClient("http://localhost/CRM.API/api/login/authenticate");
+            var request = new RestRequest(Method.POST);
+            request.AddHeader("cache-control", "no-cache");
+            request.AddHeader("content-type", "application/x-www-form-urlencoded");
+            request.AddParameter("application/x-www-form-urlencoded", "grant_type=client_credentials&Username=Test&Password=123456", ParameterType.RequestBody);
+            IRestResponse response = client.Execute(request);
+            string authoapi = response.Content.ToString().Substring(1);
+            authoapi = authoapi.Remove(authoapi.Length - 1, 1);
+
+            //var authoapi = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InRlc3QiLCJuYmYiOjE1NjUwMTQwMTYsImV4cCI6MTU2NTAxNDMxNiwiaWF0IjoxNTY1MDE0MDE2LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0L0NSTS5BUEkiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0L0NSTS5BUEkifQ.Y0C9rembhdHYKRU8VxTaFchrGQxg46qWtkHig6IzVF4";
+            var requestb = WebRequest.Create("http://localhost/CRM.API/api/Customers/1") as HttpWebRequest;
+            requestb.Method = "GET";
+            requestb.Headers.Add(HttpRequestHeader.Authorization, authoapi); //example: "Bearer F4dfghuhgudhfgJL3"
+
+            // Get response here
+            var responseb = requestb.GetResponse() as HttpWebResponse;
+            if (responseb.StatusCode == HttpStatusCode.OK)
+            {
+                
+                // ....
+            }
+
+            var client2 = new RestClient("http://localhost/CRM.API/api/Customers/1");
+            var request2 = new RestRequest(Method.GET);
+            request2.AddHeader("cache-control", "no-cache");
+            request2.AddHeader("content-type", "application/x-www-form-urlencoded");
+            request2.AddHeader("authorization",authoapi);
+            //request2.AddParameter("application/x-www-form-urlencoded", "grant_type=client_credentials&Username=Test&Password=123456", ParameterType.RequestBody);
+            
+
+            IRestResponse response2 = client2.Execute(request2);
+            string strresponse = response2.Content.ToString();
+            //strresponse = strresponse.Replace("\"", "");
+            //strresponse = strresponse.Replace("\\","");
+            //strresponse = strresponse.Replace("{", "");
+            //strresponse = strresponse.Replace("}", "");
+            strresponse = strresponse.Replace("[", "");
+            strresponse = strresponse.Replace("]", "");
+
+            //strresponse = "{codigo: \"1\",nombre: \"Joel Jose\", email:\"joel.j8 @gmail.com\" }";
+
+            JObject jsonresponse = JObject.Parse(strresponse);
+            string codigoval = jsonresponse["codigo"].Value<string>();
+            string nombreval = jsonresponse["nombre"].Value<string>();
+            string emailval = jsonresponse["email"].Value<string>();
+
+            var responseCustomer = JsonConvert.DeserializeObject<CustomerApi>(strresponse);
+            
+            //JSONObject myObject = new JSONObject(result);
+            */
+
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
