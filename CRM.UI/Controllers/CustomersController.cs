@@ -34,8 +34,17 @@ namespace CRM.UI.Controllers
         // GET: Customers/Details/5
         public ActionResult Details(int? id)
         {
-            /*
-            /* using RestSharp; // https://www.nuget.org/packages/RestSharp/ * /
+
+            List<Customer> listCustomers = db.customers.ToList();
+
+            // Entonces, después añadir los pacientes a la lista, los guardas así:    
+            var jsonCustomersList = JsonConvert.SerializeObject(listCustomers);
+            //System.IO.File.WriteAllText(@"C:\DesaVisual\patients.json", listCustomers);
+            System.IO.File.WriteAllText(@"C:\DesaVisual\patients.json", "prueba " + jsonCustomersList);
+
+
+            
+            /* using RestSharp; // https://www.nuget.org/packages/RestSharp/ */
 
             var client = new RestClient("http://localhost/CRM.API/api/login/authenticate");
             var request = new RestRequest(Method.POST);
@@ -47,7 +56,7 @@ namespace CRM.UI.Controllers
             authoapi = authoapi.Remove(authoapi.Length - 1, 1);
 
             //var authoapi = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InRlc3QiLCJuYmYiOjE1NjUwMTQwMTYsImV4cCI6MTU2NTAxNDMxNiwiaWF0IjoxNTY1MDE0MDE2LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0L0NSTS5BUEkiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0L0NSTS5BUEkifQ.Y0C9rembhdHYKRU8VxTaFchrGQxg46qWtkHig6IzVF4";
-            var requestb = WebRequest.Create("http://localhost/CRM.API/api/Customers/1") as HttpWebRequest;
+            var requestb = WebRequest.Create("http://localhost/CRM.API/api/Customers/"+ id.ToString()) as HttpWebRequest;
             requestb.Method = "GET";
             requestb.Headers.Add(HttpRequestHeader.Authorization, authoapi); //example: "Bearer F4dfghuhgudhfgJL3"
 
@@ -59,7 +68,7 @@ namespace CRM.UI.Controllers
                 // ....
             }
 
-            var client2 = new RestClient("http://localhost/CRM.API/api/Customers/1");
+            var client2 = new RestClient("http://localhost/CRM.API/api/Customers/" + id.ToString());
             var request2 = new RestRequest(Method.GET);
             request2.AddHeader("cache-control", "no-cache");
             request2.AddHeader("content-type", "application/x-www-form-urlencoded");
@@ -84,11 +93,15 @@ namespace CRM.UI.Controllers
             string emailval = jsonresponse["email"].Value<string>();
 
             var responseCustomer = JsonConvert.DeserializeObject<CustomerApi>(strresponse);
-            
+
             //JSONObject myObject = new JSONObject(result);
-            */
 
+            var responder = new Customer();
+            responder.ID = responseCustomer.Codigo;
+            responder.Name = responseCustomer.Nombre;
+            responder.Mail = responseCustomer.Email;
 
+            /*
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -99,6 +112,9 @@ namespace CRM.UI.Controllers
                 return HttpNotFound();
             }
             return View(customer);
+            */
+
+            return View(responder);
         }
 
         // GET: Customers/Create
@@ -194,6 +210,45 @@ namespace CRM.UI.Controllers
             return RedirectToAction("Index");
         }
 
+
+        
+        [HttpGet]
+        public JsonResult findcontact(string ContactoID)
+        {
+            List<Customer> objResult = db.customers.Where(e => e.Phone.Contains(ContactoID)).ToList();
+
+            return new JsonResult()
+            {
+                Data = objResult,
+                JsonRequestBehavior = JsonRequestBehavior.AllowGet
+            };
+            //return (objResult, JsonRequestBehavior.AllowGet() )
+        }
+
+
+        
+        
+        [HttpGet]
+        public JsonResult findcontactid(int ContactoID)
+        {
+            //Customer objResult = db.customers.Where(e => e.ID == ContactoID).FirstOrDefault();
+            // c.fechaNacimiento.HasValue? c.fechaNacimiento.ToString("dd/MM/yyyy") : string.Empty
+
+            var objResult = (from c in db.customers
+                                  where c.ID == ContactoID
+                                   select new { c.ID, c.Name, c.Phone, c.Mail, c.GenderId, c.Address, c.fechaNacimiento}).ToList()
+                                   .Select(x => new { x.ID,x.Name,x.Phone,x.Mail,x.GenderId,x.Address,
+                                                    fechaNacimiento = x.fechaNacimiento != null ? 
+                                                    x.fechaNacimiento?.ToString("dd/MM/yyyy") : string.Empty }).FirstOrDefault();
+
+            return new JsonResult()
+            {
+                Data = objResult,
+                JsonRequestBehavior = JsonRequestBehavior.AllowGet
+            };
+        }
+
+
         public ActionResult CargaData(string nombre, string genero)
         {
             // LoadXLS("c:\\DesaVisual\\CRM\\CRM.UI\\App_Data\\agenda.xlsx", "Hoja", "Gender", "M");
@@ -218,7 +273,7 @@ namespace CRM.UI.Controllers
             base.Dispose(disposing);
         }
 
-
+        
         private void LoadExcel()
         {
             string archivo_xls = "C:\\DesaVisual\\CRM\\CRM.UI\\App_Data\\agenda.xlsx";

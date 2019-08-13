@@ -27,7 +27,7 @@
         </div>
     *@
 
-    @**@
+    @*
 
     <div class="form-horizontal panel">
         <h4>Customer</h4>
@@ -88,6 +88,7 @@
         </div>
     </div>
 
+    *@
 
     <div class="form-horizontal panel">
         <h4>Customer</h4>
@@ -150,12 +151,20 @@
                 @Html.ActionLink("Back to List", "",
                 new { controller = "Customers" },
                 new { @class = "btn btn-warning" })
+
+
+                <button id="Find" class="btn btn-success">Buscar</button>
+                
             </div>
         </div>
 
     </div>
 
 }
+
+<div id="modalWrapper">
+    @Html.Partial("_BuscCustomer")
+</div>
 
 <div>
     @*@Html.ActionLink("Back to List", "Index")*@
@@ -168,13 +177,116 @@
         $(document).ready(function () {
             $('.input-group.date').datepicker({ format: "dd/mm/yyyy" });
             $('.datepicker').datepicker({ format: "dd/mm/yyyy" });
+            $("#btnSelected").hide();
+
+            //$('#modalWrapper').html();
+            $('#Find').click(function (e) {
+                e.preventDefault();
+                 $('#editModal').modal();
+            });
+
+            $('#FindOption').click(function (e) {
+                
+                //alert('Buscar info');
+                //debugger
+
+                var BusquedaID = $('#ContactFind').val();
+                
+                    //url: '@Url.Action("FindContact", "Customers")',
+                    //ContactoID: BusquedaID
+
+                $.ajax({
+                    url: "findcontact",
+                    type: "GET",
+                    traditional: true,
+                    data: { ContactoID: BusquedaID },
+                    contentType: "application/json; charset=utf-8",
+                    async: false,
+                    dataType: "json",
+                    success: function(dataReg) {
+                        if (dataReg != null) {
+                            //debugger
+                            //alert("Registro valido");
+                            var trHTML = ' ';
+                            $("#records_table > tbody > tr").remove();
+                            $.each(dataReg, function (i, item) {
+                                //trBtn = '<td><input type="button" name = '+item.ID+' id="btn'+item.ID+'" class="btn btn-primary btnselect"></input></td>'
+                                trBtn = '<td><input type="radio" name="rbtnSel" id=' + item.ID + ' /><td>'
+                                trHTML += '<tr><td>' + item.Name + '</td><td>' + item.Mail + '</td><td>' + item.Phone + '</td>' + trBtn + '</tr>';
+
+                            });
+                            //trHTML += ' </tbody> '
+                            $('#records_table > tbody ').append(trHTML);
+                            $("#btnSelected").show();
+                        } else {
+                            $("#btnSelected").hide();
+                        }
+                  }
+                });
+
+                e.preventDefault();
+            });
+
+            $("#btnSelected").click(function () {
+
+                //debugger
+                
+                var radioValue = $("input[name='rbtnSel']:checked");
+                
+                if(typeof radioValue[0].id == "string"){
+                    //alert("Your are a - " + radioValue[0].id);
+                    selcontact(radioValue[0].id);
+                }
+                //alert("Click on");
+
+            });
+            
+
         });
+
+        function selcontact(idselect) {
+            //debugger
+               // alert("Click on");
+                var findid = idselect;
+                $.ajax({
+                    url: "findcontactid",
+                    type: "GET",
+                    traditional: true,
+                    data: { ContactoID: findid },
+                    contentType: "application/json; charset=utf-8",
+                    async: false,
+                    dataType: "json",
+                    success: function(dataReg) {
+                      if (dataReg != null) {
+                          //debugger
+                          //alert("Registro valido");
+                          $("#Name").val(dataReg.Name);
+                          $("#fechaNacimiento").val(dataReg.fechaNacimiento);
+                          $("#Phone").val(dataReg.Phone);
+                          $("#Mail").val(dataReg.Mail);
+                          $("#Address").val(dataReg.Address);
+                          $("#GenderId").val(dataReg.GenderId);
+
+                          //$('#editModal').hide();
+                          CierraPopup();
+                      }
+                  }
+                });
+
+        }
+
+        function CierraPopup() {
+            $("#editModal").modal('hide');//ocultamos el modal
+            $('body').removeClass('modal-open');//eliminamos la clase del body para poder hacer scroll
+            $('.modal-backdrop').remove();//eliminamos el backdrop del modal
+        }
 
         $(function () {
             $.validator.methods.date = function (value, element) {
                 return this.optional(element) || moment(value, "L", true).isValid();
             }
         });
+
     </script>
 }
 
