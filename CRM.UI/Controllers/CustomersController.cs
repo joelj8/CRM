@@ -7,11 +7,13 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Services;
 using CRM.Data;
 using CRM.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
+
 
 namespace CRM.UI.Controllers
 {
@@ -21,7 +23,21 @@ namespace CRM.UI.Controllers
 
         public CustomersController() {
             db = new CDBContext();
+            GeneraToken();
         }
+
+        private void GeneraToken() {
+            var client = new RestClient("http://localhost/CRM.API/api/login/authenticate");
+            var request = new RestRequest(Method.POST);
+            request.AddHeader("cache-control", "no-cache");
+            request.AddHeader("content-type", "application/x-www-form-urlencoded");
+            request.AddParameter("application/x-www-form-urlencoded", "grant_type=client_credentials&Username=Test&Password=123456", ParameterType.RequestBody);
+            IRestResponse response = client.Execute(request);
+            string authoapi = response.Content.ToString().Substring(1);
+            authoapi = authoapi.Remove(authoapi.Length - 1, 1);
+            System.Web.HttpContext.Current.Session["tokenuser"] = authoapi;
+        }
+
         // GET: Customers
         public ActionResult Index()
         {
@@ -34,31 +50,25 @@ namespace CRM.UI.Controllers
         // GET: Customers/Details/5
         public ActionResult Details(int? id)
         {
-
-            List<Customer> listCustomers = db.customers.ToList();
+            
+            //List<Customer> listCustomers = db.customers.ToList();
 
             // Entonces, después añadir los pacientes a la lista, los guardas así:    
-            var jsonCustomersList = JsonConvert.SerializeObject(listCustomers);
+            //var jsonCustomersList = JsonConvert.SerializeObject(listCustomers);
             //System.IO.File.WriteAllText(@"C:\DesaVisual\patients.json", listCustomers);
-            System.IO.File.WriteAllText(@"C:\DesaVisual\patients.json", "prueba " + jsonCustomersList);
-
-
+            //System.IO.File.WriteAllText(@"C:\DesaVisual\patients.json", "prueba " + jsonCustomersList);
             
             /* using RestSharp; // https://www.nuget.org/packages/RestSharp/ */
 
-            var client = new RestClient("http://localhost/CRM.API/api/login/authenticate");
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("cache-control", "no-cache");
-            request.AddHeader("content-type", "application/x-www-form-urlencoded");
-            request.AddParameter("application/x-www-form-urlencoded", "grant_type=client_credentials&Username=Test&Password=123456", ParameterType.RequestBody);
-            IRestResponse response = client.Execute(request);
-            string authoapi = response.Content.ToString().Substring(1);
-            authoapi = authoapi.Remove(authoapi.Length - 1, 1);
+
+            string tokenausar = System.Web.HttpContext.Current.Session["tokenuser"].ToString();
+
+            
 
             //var authoapi = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InRlc3QiLCJuYmYiOjE1NjUwMTQwMTYsImV4cCI6MTU2NTAxNDMxNiwiaWF0IjoxNTY1MDE0MDE2LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0L0NSTS5BUEkiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0L0NSTS5BUEkifQ.Y0C9rembhdHYKRU8VxTaFchrGQxg46qWtkHig6IzVF4";
             var requestb = WebRequest.Create("http://localhost/CRM.API/api/Customers/"+ id.ToString()) as HttpWebRequest;
             requestb.Method = "GET";
-            requestb.Headers.Add(HttpRequestHeader.Authorization, authoapi); //example: "Bearer F4dfghuhgudhfgJL3"
+            requestb.Headers.Add(HttpRequestHeader.Authorization, tokenausar); //example: "Bearer F4dfghuhgudhfgJL3"
 
             // Get response here
             var responseb = requestb.GetResponse() as HttpWebResponse;
@@ -72,7 +82,7 @@ namespace CRM.UI.Controllers
             var request2 = new RestRequest(Method.GET);
             request2.AddHeader("cache-control", "no-cache");
             request2.AddHeader("content-type", "application/x-www-form-urlencoded");
-            request2.AddHeader("authorization",authoapi);
+            request2.AddHeader("authorization", tokenausar);
             //request2.AddParameter("application/x-www-form-urlencoded", "grant_type=client_credentials&Username=Test&Password=123456", ParameterType.RequestBody);
             
 
@@ -85,12 +95,11 @@ namespace CRM.UI.Controllers
             strresponse = strresponse.Replace("[", "");
             strresponse = strresponse.Replace("]", "");
 
-            //strresponse = "{codigo: \"1\",nombre: \"Joel Jose\", email:\"joel.j8 @gmail.com\" }";
-
-            JObject jsonresponse = JObject.Parse(strresponse);
-            string codigoval = jsonresponse["codigo"].Value<string>();
-            string nombreval = jsonresponse["nombre"].Value<string>();
-            string emailval = jsonresponse["email"].Value<string>();
+            //JObject jsonresponse = JObject.Parse(strresponse);
+            //string codigoval = jsonresponse["codigo"].Value<string>();
+            //string nombreval = jsonresponse["nombre"].Value<string>();
+            //string emailval = jsonresponse["email"].Value<string>();
+            //string direccion = jsonresponse["direccion"].Value<string>();
 
             var responseCustomer = JsonConvert.DeserializeObject<CustomerApi>(strresponse);
 
@@ -100,6 +109,17 @@ namespace CRM.UI.Controllers
             responder.ID = responseCustomer.Codigo;
             responder.Name = responseCustomer.Nombre;
             responder.Mail = responseCustomer.Email;
+            responder.Address = responseCustomer.Direccion;
+            responder.fechaNacimiento = responseCustomer.fechaNac != null && responseCustomer.fechaNac != string.Empty ? 
+                                        DateTime.Parse(responseCustomer.fechaNac) : responder.fechaNacimiento;
+
+            responder.GenderId = responseCustomer.Genero;
+            responder.Phone = responseCustomer.Telefono;
+
+            //responder.Address = responseCustomer.Direccion;
+            
+            //responder.Address = responseCustomer;
+            //responder.Address = responseCustomer.
 
             /*
             if (id == null)
@@ -212,10 +232,25 @@ namespace CRM.UI.Controllers
 
 
         
-        [HttpGet]
+        [HttpPost]
         public JsonResult findcontact(string ContactoID)
         {
-            List<Customer> objResult = db.customers.Where(e => e.Phone.Contains(ContactoID)).ToList();
+            //List<Customer> objResult = db.customers.Where(e => e.Phone.Contains(ContactoID)).ToList();
+            var objResult = (from c in db.customers
+                             where c.Phone.Contains(ContactoID)
+                             group c by new { c.Name, c.Phone, c.Mail, c.GenderId, c.Address, c.fechaNacimiento }
+                                  into cgroup
+                             let maxID = cgroup.Max(p => p.ID)
+                             select new
+                             {
+                                 ID = maxID,
+                                 Name = cgroup.Key.Name,
+                                 Phone = cgroup.Key.Phone,
+                                 Mail = cgroup.Key.Mail,
+                                 GenderId = cgroup.Key.GenderId,
+                                 Address = cgroup.Key.Address,
+                                 fechaNacimiento = cgroup.Key.fechaNacimiento
+                             }).ToList();
 
             return new JsonResult()
             {
@@ -225,10 +260,7 @@ namespace CRM.UI.Controllers
             //return (objResult, JsonRequestBehavior.AllowGet() )
         }
 
-
-        
-        
-        [HttpGet]
+        [HttpPost]
         public JsonResult findcontactid(int ContactoID)
         {
             //Customer objResult = db.customers.Where(e => e.ID == ContactoID).FirstOrDefault();

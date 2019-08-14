@@ -15,5 +15,11 @@ namespace CRM.Models
 
         public string Email { get; set; }
 
+        public string Direccion {get; set;}
+        public string fechaNac { get; set; }
+        public string Genero { get; set; }
+        public string Telefono { get; set; }
+
+
     }
 }

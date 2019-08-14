@@ -197,9 +197,9 @@
 
                 $.ajax({
                     url: "findcontact",
-                    type: "GET",
+                    type: "post",
                     traditional: true,
-                    data: { ContactoID: BusquedaID },
+                    data: JSON.stringify({ ContactoID: BusquedaID }) ,
                     contentType: "application/json; charset=utf-8",
                     async: false,
                     dataType: "json",
@@ -250,9 +250,9 @@
                 var findid = idselect;
                 $.ajax({
                     url: "findcontactid",
-                    type: "GET",
+                    type: "post",
                     traditional: true,
-                    data: { ContactoID: findid },
+                    data: JSON.stringify({ ContactoID: findid }),
                     contentType: "application/json; charset=utf-8",
                     async: false,
                     dataType: "json",

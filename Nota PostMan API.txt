@@ -1,0 +1,30 @@
+console.log("Funciona");
+
+const echoPostRequest = {
+  url: 'http://localhost/CRM.API/api/login/authenticate',
+  method: 'POST',
+  header: 'Content-Type:application/json',
+  body: {
+    mode: 'application/json',
+    raw: JSON.stringify(
+        {
+        Username:"test",
+        Password:"123456"
+        })
+  }
+};
+
+var getToken = true;
+var myToken = "";
+    myToken = pm.sendRequest(echoPostRequest, function (err, res) {
+    //console.log(err ? err : res.json());
+        if (err === null) {
+            myToken = res.json();
+            
+       console.log(myToken);
+       
+       pm.environment.set("authString", myToken);
+        }
+    });
+    
+  
