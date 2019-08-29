@@ -77,3 +77,6 @@ C:\DesaVisual\CRM\CRM.API\bin\CRM.Data.dll.config
 C:\DesaVisual\CRM\CRM.API\bin\CRM.Models.pdb
 C:\DesaVisual\CRM\CRM.API\bin\EntityFramework.xml
 C:\DesaVisual\CRM\CRM.API\bin\EntityFramework.SqlServer.xml
+C:\DesaVisual\CRM\CRM.API\bin\AutoMapper.dll
+C:\DesaVisual\CRM\CRM.API\bin\AutoMapper.pdb
+C:\DesaVisual\CRM\CRM.API\bin\AutoMapper.xml

@@ -23,3 +23,6 @@ C:\DesaVisual\CRM\CRM.Data\obj\Debug\CRM.Data.Migrations.MigrationGender1.resour
 C:\DesaVisual\CRM\CRM.Data\obj\Debug\CRM.Data.Migrations.MigrationGender2.resources
 C:\DesaVisual\CRM\CRM.Data\obj\Debug\CRM.Data.Migrations.Migration_FechaNacimiento.resources
 C:\DesaVisual\CRM\CRM.Data\obj\Debug\CRM.Data.Migrations.customerStructure.resources
+C:\DesaVisual\CRM\CRM.Data\bin\Debug\AutoMapper.dll
+C:\DesaVisual\CRM\CRM.Data\bin\Debug\AutoMapper.pdb
+C:\DesaVisual\CRM\CRM.Data\bin\Debug\AutoMapper.xml

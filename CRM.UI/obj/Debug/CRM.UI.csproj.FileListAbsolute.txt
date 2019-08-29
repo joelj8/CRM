@@ -110,3 +110,6 @@ C:\DesaVisual\CRM\CRM.UI\bin\CRM.Data.dll.config
 C:\DesaVisual\CRM\CRM.UI\bin\CRM.Models.pdb
 C:\DesaVisual\CRM\CRM.UI\bin\RestSharp.dll
 C:\DesaVisual\CRM\CRM.UI\bin\RestSharp.xml
+C:\DesaVisual\CRM\CRM.UI\bin\AutoMapper.dll
+C:\DesaVisual\CRM\CRM.UI\bin\AutoMapper.pdb
+C:\DesaVisual\CRM\CRM.UI\bin\AutoMapper.xml

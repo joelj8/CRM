@@ -13,16 +13,18 @@ using CRM.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
-
+using AutoMapper;
+using CRM.Models.ProfileConfig;
 
 namespace CRM.UI.Controllers
 {
+    
     public class CustomersController : Controller
     {
-        private readonly CDBContext db ;
+        private readonly CDBContext _db;
 
         public CustomersController() {
-            db = new CDBContext();
+            _db = new CDBContext();
             GeneraToken();
         }
 
@@ -41,10 +43,10 @@ namespace CRM.UI.Controllers
         // GET: Customers
         public ActionResult Index()
         {
-            SelectList lsGender = new SelectList(db.genders, "genderId", "genderName");
+            SelectList lsGender = new SelectList(_db.genders, "genderId", "genderName");
             ViewBag.GenderList = lsGender;
 
-            return View(db.customers.ToList());
+            return View(_db.customers.ToList());
         }
 
         // GET: Customers/Details/5
@@ -64,7 +66,7 @@ namespace CRM.UI.Controllers
             string tokenausar = System.Web.HttpContext.Current.Session["tokenuser"].ToString();
 
             
-
+             /*   
             //var authoapi = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InRlc3QiLCJuYmYiOjE1NjUwMTQwMTYsImV4cCI6MTU2NTAxNDMxNiwiaWF0IjoxNTY1MDE0MDE2LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0L0NSTS5BUEkiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0L0NSTS5BUEkifQ.Y0C9rembhdHYKRU8VxTaFchrGQxg46qWtkHig6IzVF4";
             var requestb = WebRequest.Create("http://localhost/CRM.API/api/Customers/"+ id.ToString()) as HttpWebRequest;
             requestb.Method = "GET";
@@ -77,6 +79,7 @@ namespace CRM.UI.Controllers
                 
                 // ....
             }
+            */
 
             var client2 = new RestClient("http://localhost/CRM.API/api/Customers/" + id.ToString());
             var request2 = new RestRequest(Method.GET);
@@ -88,23 +91,25 @@ namespace CRM.UI.Controllers
 
             IRestResponse response2 = client2.Execute(request2);
             string strresponse = response2.Content.ToString();
-            //strresponse = strresponse.Replace("\"", "");
-            //strresponse = strresponse.Replace("\\","");
-            //strresponse = strresponse.Replace("{", "");
-            //strresponse = strresponse.Replace("}", "");
+
             strresponse = strresponse.Replace("[", "");
             strresponse = strresponse.Replace("]", "");
 
-            //JObject jsonresponse = JObject.Parse(strresponse);
-            //string codigoval = jsonresponse["codigo"].Value<string>();
-            //string nombreval = jsonresponse["nombre"].Value<string>();
-            //string emailval = jsonresponse["email"].Value<string>();
-            //string direccion = jsonresponse["direccion"].Value<string>();
 
-            var responseCustomer = JsonConvert.DeserializeObject<CustomerApi>(strresponse);
 
-            //JSONObject myObject = new JSONObject(result);
+            CustomerApi responseCustomer = JsonConvert.DeserializeObject<CustomerApi>(strresponse);
+            var configprofCustomer = FactoryProfile.CreateProfile<CustomerProfile>().GetProfile();
 
+            /* Mapper 
+               Fluent Validation
+             */
+            /* https://dotnettutorials.net/lesson/automapper-in-c-sharp/ Ejemplo para usar el Mapper*/
+            //Mapper mapper = new Mapper(CustomerProfile.GetProfile()); // Necesita el metodo static
+            Mapper mapper = new Mapper(configprofCustomer); // Necesita que el metodo no sea static
+            var responder = mapper.Map<CustomerApi, Customer>(responseCustomer);
+           
+
+            /*
             var responder = new Customer();
             responder.ID = responseCustomer.Codigo;
             responder.Name = responseCustomer.Nombre;
@@ -115,24 +120,9 @@ namespace CRM.UI.Controllers
 
             responder.GenderId = responseCustomer.Genero;
             responder.Phone = responseCustomer.Telefono;
-
-            //responder.Address = responseCustomer.Direccion;
-            
-            //responder.Address = responseCustomer;
-            //responder.Address = responseCustomer.
-
-            /*
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Customer customer = db.customers.Find(id);
-            if (customer == null)
-            {
-                return HttpNotFound();
-            }
-            return View(customer);
             */
+
+
 
             return View(responder);
         }
@@ -141,7 +131,7 @@ namespace CRM.UI.Controllers
         public ActionResult Create()
         {
             
-            SelectList lsGender = new SelectList(db.genders, "genderId", "genderName");
+            SelectList lsGender = new SelectList(_db.genders, "genderId", "genderName");
 
             ViewBag.GenderList = lsGender;
             
@@ -157,8 +147,8 @@ namespace CRM.UI.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.customers.Add(customer);
-                db.SaveChanges();
+                _db.customers.Add(customer);
+                _db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
@@ -173,13 +163,13 @@ namespace CRM.UI.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Customer customer = db.customers.Find(id);
+            Customer customer = _db.customers.Find(id);
             if (customer == null)
             {
                 return HttpNotFound();
             }
 
-            SelectList lsGender = new SelectList(db.genders, "genderId", "genderName");
+            SelectList lsGender = new SelectList(_db.genders, "genderId", "genderName");
             ViewBag.GenderList = lsGender;
 
             return View(customer);
@@ -194,11 +184,11 @@ namespace CRM.UI.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(customer).State = EntityState.Modified;
-                db.SaveChanges();
+                _db.Entry(customer).State = EntityState.Modified;
+                _db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            SelectList lsGender = new SelectList(db.genders, "genderId", "genderName");
+            SelectList lsGender = new SelectList(_db.genders, "genderId", "genderName");
             ViewBag.GenderList = lsGender;
 
             return View(customer);
@@ -211,7 +201,7 @@ namespace CRM.UI.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Customer customer = db.customers.Find(id);
+            Customer customer = _db.customers.Find(id);
             if (customer == null)
             {
                 return HttpNotFound();
@@ -224,9 +214,9 @@ namespace CRM.UI.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Customer customer = db.customers.Find(id);
-            db.customers.Remove(customer);
-            db.SaveChanges();
+            Customer customer = _db.customers.Find(id);
+            _db.customers.Remove(customer);
+            _db.SaveChanges();
             return RedirectToAction("Index");
         }
 
@@ -235,8 +225,8 @@ namespace CRM.UI.Controllers
         [HttpPost]
         public JsonResult findcontact(string ContactoID)
         {
-            //List<Customer> objResult = db.customers.Where(e => e.Phone.Contains(ContactoID)).ToList();
-            var objResult = (from c in db.customers
+            //List<Customer> objResult = _db.customers.Where(e => e.Phone.Contains(ContactoID)).ToList();
+            var objResult = (from c in _db.customers
                              where c.Phone.Contains(ContactoID)
                              group c by new { c.Name, c.Phone, c.Mail, c.GenderId, c.Address, c.fechaNacimiento }
                                   into cgroup
@@ -263,10 +253,10 @@ namespace CRM.UI.Controllers
         [HttpPost]
         public JsonResult findcontactid(int ContactoID)
         {
-            //Customer objResult = db.customers.Where(e => e.ID == ContactoID).FirstOrDefault();
+            //Customer objResult = _db.customers.Where(e => e.ID == ContactoID).FirstOrDefault();
             // c.fechaNacimiento.HasValue? c.fechaNacimiento.ToString("dd/MM/yyyy") : string.Empty
 
-            var objResult = (from c in db.customers
+            var objResult = (from c in _db.customers
                                   where c.ID == ContactoID
                                    select new { c.ID, c.Name, c.Phone, c.Mail, c.GenderId, c.Address, c.fechaNacimiento}).ToList()
                                    .Select(x => new { x.ID,x.Name,x.Phone,x.Mail,x.GenderId,x.Address,
@@ -287,10 +277,10 @@ namespace CRM.UI.Controllers
 
             //LoadExcel();
 
-            var cusList = db.customers.ToList<Customer>();
+            var cusList = _db.customers.ToList<Customer>();
            if (genero != string.Empty)
             {
-                cusList = db.customers.Where(c => c.GenderId.Contains(genero.Trim())).ToList();
+                cusList = _db.customers.Where(c => c.GenderId.Contains(genero.Trim())).ToList();
             }
             
             return Json(new { data = cusList }, JsonRequestBehavior.AllowGet);
@@ -300,7 +290,7 @@ namespace CRM.UI.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }
