@@ -1,9 +1,9 @@
 C:\DesaVisual\CRM\CRM.Models\bin\Debug\CRM.Models.dll
 C:\DesaVisual\CRM\CRM.Models\bin\Debug\CRM.Models.pdb
-C:\DesaVisual\CRM\CRM.Models\obj\Debug\CRM.Models.csproj.CoreCompileInputs.cache
-C:\DesaVisual\CRM\CRM.Models\obj\Debug\CRM.Models.dll
-C:\DesaVisual\CRM\CRM.Models\obj\Debug\CRM.Models.pdb
 C:\DesaVisual\CRM\CRM.Models\bin\Debug\AutoMapper.dll
 C:\DesaVisual\CRM\CRM.Models\bin\Debug\AutoMapper.pdb
 C:\DesaVisual\CRM\CRM.Models\bin\Debug\AutoMapper.xml
+C:\DesaVisual\CRM\CRM.Models\obj\Debug\CRM.Models.csproj.CoreCompileInputs.cache
 C:\DesaVisual\CRM\CRM.Models\obj\Debug\CRM.Models.csproj.CopyComplete
+C:\DesaVisual\CRM\CRM.Models\obj\Debug\CRM.Models.dll
+C:\DesaVisual\CRM\CRM.Models\obj\Debug\CRM.Models.pdb

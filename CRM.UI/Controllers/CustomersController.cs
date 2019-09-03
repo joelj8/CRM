@@ -46,84 +46,49 @@ namespace CRM.UI.Controllers
             SelectList lsGender = new SelectList(_db.genders, "genderId", "genderName");
             ViewBag.GenderList = lsGender;
 
-            return View(_db.customers.ToList());
+
+            List<string> generosList = (from g in _db.genders where g.GenderId == "M" select g.GenderId).ToList();
+            
+
+            List<Customer> customerList = (from c in _db.customers
+                                where !generosList.Contains(c.GenderId)
+                                select c).ToList();
+
+            //var customerList2 = _db.customers.Where(i => generosList.Contains(i.GenderId));
+
+            //return View(_db.customers.ToList());
+
+            return View(_db.customers.Where(c => c.ID == 2).ToList());
         }
 
         // GET: Customers/Details/5
         public ActionResult Details(int? id)
         {
             
-            //List<Customer> listCustomers = db.customers.ToList();
-
-            // Entonces, después añadir los pacientes a la lista, los guardas así:    
-            //var jsonCustomersList = JsonConvert.SerializeObject(listCustomers);
-            //System.IO.File.WriteAllText(@"C:\DesaVisual\patients.json", listCustomers);
-            //System.IO.File.WriteAllText(@"C:\DesaVisual\patients.json", "prueba " + jsonCustomersList);
-            
-            /* using RestSharp; // https://www.nuget.org/packages/RestSharp/ */
-
-
             string tokenausar = System.Web.HttpContext.Current.Session["tokenuser"].ToString();
 
-            
-             /*   
-            //var authoapi = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InRlc3QiLCJuYmYiOjE1NjUwMTQwMTYsImV4cCI6MTU2NTAxNDMxNiwiaWF0IjoxNTY1MDE0MDE2LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0L0NSTS5BUEkiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0L0NSTS5BUEkifQ.Y0C9rembhdHYKRU8VxTaFchrGQxg46qWtkHig6IzVF4";
-            var requestb = WebRequest.Create("http://localhost/CRM.API/api/Customers/"+ id.ToString()) as HttpWebRequest;
-            requestb.Method = "GET";
-            requestb.Headers.Add(HttpRequestHeader.Authorization, tokenausar); //example: "Bearer F4dfghuhgudhfgJL3"
+            RestClient client = new RestClient("http://localhost/CRM.API/api/Customers/" + id.ToString());
+            RestRequest request = new RestRequest(Method.GET);
 
-            // Get response here
-            var responseb = requestb.GetResponse() as HttpWebResponse;
-            if (responseb.StatusCode == HttpStatusCode.OK)
-            {
-                
-                // ....
-            }
-            */
+            request.AddHeader("cache-control", "no-cache");
+            request.AddHeader("content-type", "application/x-www-form-urlencoded");
+            request.AddHeader("authorization", tokenausar);
 
-            var client2 = new RestClient("http://localhost/CRM.API/api/Customers/" + id.ToString());
-            var request2 = new RestRequest(Method.GET);
-            request2.AddHeader("cache-control", "no-cache");
-            request2.AddHeader("content-type", "application/x-www-form-urlencoded");
-            request2.AddHeader("authorization", tokenausar);
-            //request2.AddParameter("application/x-www-form-urlencoded", "grant_type=client_credentials&Username=Test&Password=123456", ParameterType.RequestBody);
-            
-
-            IRestResponse response2 = client2.Execute(request2);
-            string strresponse = response2.Content.ToString();
+            IRestResponse response = client.Execute(request);
+            string strresponse = response.Content.ToString();
 
             strresponse = strresponse.Replace("[", "");
             strresponse = strresponse.Replace("]", "");
 
-
-
             CustomerApi responseCustomer = JsonConvert.DeserializeObject<CustomerApi>(strresponse);
             var configprofCustomer = FactoryProfile.CreateProfile<CustomerProfile>().GetProfile();
 
-            /* Mapper 
-               Fluent Validation
-             */
             /* https://dotnettutorials.net/lesson/automapper-in-c-sharp/ Ejemplo para usar el Mapper*/
             //Mapper mapper = new Mapper(CustomerProfile.GetProfile()); // Necesita el metodo static
+
             Mapper mapper = new Mapper(configprofCustomer); // Necesita que el metodo no sea static
             var responder = mapper.Map<CustomerApi, Customer>(responseCustomer);
            
-
-            /*
-            var responder = new Customer();
-            responder.ID = responseCustomer.Codigo;
-            responder.Name = responseCustomer.Nombre;
-            responder.Mail = responseCustomer.Email;
-            responder.Address = responseCustomer.Direccion;
-            responder.fechaNacimiento = responseCustomer.fechaNac != null && responseCustomer.fechaNac != string.Empty ? 
-                                        DateTime.Parse(responseCustomer.fechaNac) : responder.fechaNacimiento;
-
-            responder.GenderId = responseCustomer.Genero;
-            responder.Phone = responseCustomer.Telefono;
-            */
-
-
-
             return View(responder);
         }
 
@@ -220,8 +185,6 @@ namespace CRM.UI.Controllers
             return RedirectToAction("Index");
         }
 
-
-        
         [HttpPost]
         public JsonResult findcontact(string ContactoID)
         {
@@ -270,7 +233,6 @@ namespace CRM.UI.Controllers
             };
         }
 
-
         public ActionResult CargaData(string nombre, string genero)
         {
             // LoadXLS("c:\\DesaVisual\\CRM\\CRM.UI\\App_Data\\agenda.xlsx", "Hoja", "Gender", "M");
@@ -295,7 +257,6 @@ namespace CRM.UI.Controllers
             base.Dispose(disposing);
         }
 
-        
         private void LoadExcel()
         {
             string archivo_xls = "C:\\DesaVisual\\CRM\\CRM.UI\\App_Data\\agenda.xlsx";

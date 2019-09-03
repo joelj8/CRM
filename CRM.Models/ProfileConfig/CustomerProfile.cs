@@ -18,8 +18,10 @@ namespace CRM.Models.ProfileConfig
                     .ForMember(dest => dest.Name, act => act.MapFrom(src => src.Nombre))
                     .ForMember(dest => dest.Mail, act => act.MapFrom(src => src.Email))
                     .ForMember(dest => dest.Address, act => act.MapFrom(src => src.Direccion))
-                    .ForMember(dest => dest.fechaNacimiento, act => act.MapFrom(src => src.fechaNac != null ? DateTime.Parse(src.fechaNac) : new DateTime()))
+                    .ForMember(dest => dest.fechaNacimiento, act => act.MapFrom(src => src.fechaNac != null && src.fechaNac != string.Empty ? DateTime.Parse(src.fechaNac) : new DateTime()))
                     .ForMember(dest => dest.GenderId, act => act.MapFrom(src => src.Genero))
+                    .ForPath(dest => dest.GenderGrl.GenderId, act => act.MapFrom(src => src.Genero))
+                    .ForPath(dest => dest.GenderGrl.GenderName, act => act.MapFrom(src => src.Genero))
                     .ForMember(dest => dest.Phone, act => act.MapFrom(src => src.Telefono)).ReverseMap();
             });
             return config;

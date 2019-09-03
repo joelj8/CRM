@@ -39,6 +39,8 @@ namespace CRM.API.Controllers
                                                   fechaNac = t.fechaNac != null ? t.fechaNac?.ToString("dd/MM/yyyy") : string.Empty,
                                                   t.genero, t.telefono }).ToList();
 
+            var result = db.customers.Include("GenderGrl").FirstOrDefault(i => i.ID == id);
+
             return Ok(customersList);
         }
         [HttpGet]
